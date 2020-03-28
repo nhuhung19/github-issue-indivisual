@@ -1,8 +1,8 @@
 import React from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css';
 const ReactDOM = require('react-dom')
-// const ReactMarkdown = require('react-markdown')
 const ReactMarkdown = require('react-markdown/with-html')
+const moment = require('moment');
 
 export default function ListIssue(props) {
     console.log(props)
@@ -13,7 +13,7 @@ export default function ListIssue(props) {
                     <div className="card w-100 h-100">
                         <div className="card-header">
                             <h4>#{el.number}<span> <a>{el.title}</a></span></h4>
-                            <div>opened {el.updated_at} by <strong>@{el.user.login}</strong></div>
+                            <div>opened {moment(el.updated_at).fromNow()} by <strong>@{el.user.login}</strong></div>
                         </div>
                         <div className="card-body w-100 h-100">
                             <ReactMarkdown
@@ -24,7 +24,7 @@ export default function ListIssue(props) {
                         <div className="card-footer text-muted">
                             {el.labels.map(lable => {
                                 return (
-                                        <span className="rounded-pill p-2" style={{ color: `${lable.color}` }}>{lable.name}</span>
+                                        <span style={{ color: `${lable.color}` }} className="rounded-pill p-2">{lable.name}</span>
                                 )
                             })}
                         </div>

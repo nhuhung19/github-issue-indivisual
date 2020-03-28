@@ -7,6 +7,7 @@ import ListIssue from './components/ListIssue'
 import Pagination from "react-js-pagination";
 import Modal from 'react-modal';
 const ReactDOM = require('react-dom')
+const moment = require('moment');
 // const ReactMarkdown = require('react-markdown')
 // const ReactMarkdown = require('react-markdown/with-html')
 // const React = require('react')
