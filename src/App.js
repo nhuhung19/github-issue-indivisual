@@ -11,9 +11,6 @@ const ReactDOM = require('react-dom')
 // const ReactMarkdown = require('react-markdown/with-html')
 // const React = require('react')
 
-
-
-
 const clientId = process.env.REACT_APP_CLIENT_ID;
 
 function App() {
@@ -24,6 +21,9 @@ function App() {
     let [page, setPage] = useState(1)
     let [repos, setRepos] = useState([])
     let [issues, setIssues] = useState([])
+    let [issueName, setIssueName] = useState('')
+    let [inputTitle, setInputTitle] = useState('')
+    let [inputContent, setInputContent] = useState('')
     let [total, setTotal] = useState(null)
 
     useEffect(() => {
@@ -51,6 +51,35 @@ function App() {
         fetchSearch(searchTerm, page)
     }
 
+    let onTitleChange = (e) => {
+        let value = e.target.value
+        setInputTitle(value)
+    }
+
+    let onContentChange = (e) => {
+        let value = e.target.value
+        setInputContent(value)
+    }
+
+    const onPostIssue = async (e) => {
+        let fullName = issueName
+        e.preventDefault()
+        const issue = { title: inputTitle, body: inputContent};
+        console.log(issue)
+        console.log(fullName)
+        const url = `https://api.github.com/repos/${fullName}/issues`;
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                Authorization: `token ${token}`
+            },
+            body: JSON.stringify(issue)
+        });
+    }
+
+
+
     const fetchSearch = async (searchTerm, page) => {
         let url = `https://api.github.com/search/repositories?q=${searchTerm}&page=${page}`
         let respone = await fetch(url, {
@@ -67,6 +96,9 @@ function App() {
 
     }
     const fetchReposIssue = async (fullname) => {
+        // issueName = fullname
+        setIssueName(fullname)
+        console.log(issueName)
         setView('listIssue')
         let url = `https://api.github.com/repos/${fullname}/issues`
         let respone = await fetch(url, {
@@ -87,7 +119,7 @@ function App() {
         }
         else if (view === 'listIssue') {
             return (
-                <ListIssue issues={issues} openModal={openModal}/>
+                <ListIssue issues={issues} openModal={openModal} />
             )
         }
     }
@@ -123,7 +155,6 @@ function App() {
         setIsOpen(false);
     }
 
-    console.log(searchTerm)
     // console.log(token)
     return (
         <div>
@@ -143,19 +174,34 @@ function App() {
                     isOpen={modalIsOpen}
                     // onAfterOpen={afterOpenModal}
                     onRequestClose={closeModal}
-                    style={{ overlay: {display:"flex",justifyContent:"center"}, content: {width:"70%",height:"70%", position:"relative"} }}
+                    style={{ overlay: { display: "flex", justifyContent: "center" }, content: { width: "70%", height: "70%", position: "relative" } }}
                     contentLabel="Example Modal"
                 >
-                    <form className="w-100 h-100">
+                    <form onSubmit={onPostIssue} className="w-100 h-100">
                         <div className="form-group">
                             <label for="exampleFormControlInput1">Title Issue</label>
-                            <input type="text" className="form-control" id="exampleFormControlInput1" placeholder="Title" />
+                            <input
+                                onChange={onTitleChange}
+                                name='title'
+                                value={inputTitle}
+                                type="text"
+                                className="form-control"
+                                id="exampleFormControlInput1"
+                                placeholder="Title" />
                         </div>
                         <div className="form-group">
                             <label for="exampleFormControlTextarea1">Content</label>
-                            <textarea className="form-control w-100" id="exampleFormControlTextarea1" rows="8"></textarea>
+                            <textarea
+                                onChange={onContentChange}
+                                name='content'
+                                value={inputContent}
+                                className="form-control w-100"
+                                id="exampleFormControlTextarea1"
+                                rows="8">
+
+                            </textarea>
                         </div>
-                        <button type="button" className="btn btn-success">Submit Issue</button>
+                        <button type="submit" className="btn btn-success">Submit Issue</button>
                     </form>
                 </Modal>
             </div>
