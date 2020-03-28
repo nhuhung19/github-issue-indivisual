@@ -25,3 +25,15 @@ https://api.github.com/repos/${owner}/${repos}/issues?page=${pagenum}&per_page=2
     //     console.log(result)
 
     // }
+
+
+    state
+    comments
+    avatar_url
+    created_at
+    updated_at
+
+
+    login
+    body
+    labels[0].name

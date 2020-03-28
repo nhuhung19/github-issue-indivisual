@@ -3,8 +3,11 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import NavBarSearch from './components/NavBarSearch'
 import Repositories from './components/Repostories'
-import listIssue from './components/ListIssue'
+import ListIssue from './components/ListIssue'
 import Pagination from "react-js-pagination";
+const ReactDOM = require('react-dom')
+// const ReactMarkdown = require('react-markdown')
+// const ReactMarkdown = require('react-markdown/with-html')
 // const React = require('react')
 
 
@@ -14,6 +17,7 @@ const clientId = process.env.REACT_APP_CLIENT_ID;
 
 function App() {
     const [token, setToken] = useState(null)
+    let [view, setView] = useState('landing')
     let [searchTerm, setSearchTerm] = useState('')
     let [page, setPage] = useState(1)
     let [repos, setRepos] = useState([])
@@ -57,8 +61,10 @@ function App() {
         setRepos(result.items)
         setTotal(result.total_count)
         console.log(result.items)
+        
     }
     const fetchReposIssue = async (fullname) => {
+        setView('listIssue')
         let url = `https://api.github.com/repos/${fullname}/issues`
         let respone = await fetch(url, {
             method: 'GET',
@@ -70,6 +76,17 @@ function App() {
         console.log('listIssue',result)
         setIssues(issues.concat(result))
         console.log(issues)
+    }
+
+    const showView = () => {
+        if(view === 'landing') {
+            return showRepos()
+        }
+        else if (view === 'listIssue') {
+            return (
+                <ListIssue issues={issues}/>
+            )
+        }
     }
 
     const showRepos = () => {
@@ -111,7 +128,7 @@ function App() {
             <div className="row">
                 <div className="col-lg-3"></div>
                 <div className="col-lg-9">
-                    {showRepos()}
+                    {showView()}
                 </div>
             </div>
 
