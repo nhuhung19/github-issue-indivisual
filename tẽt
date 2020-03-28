@@ -37,3 +37,27 @@ https://api.github.com/repos/${owner}/${repos}/issues?page=${pagenum}&per_page=2
     login
     body
     labels[0].name
+
+
+    <div class="card">
+  <div class="card-header">
+    #{el.number}<span> <a >{el.title}</a></span>
+    <div>opened {el.updated_at} by {el.user.login}</div>
+  </div>
+  <div class="card-body">
+    <ReactMarkdown
+                            source={el.body}
+                            escapeHtml={false}
+                        />
+    <a href="#" class="btn btn-primary">Go somewhere</a>
+  </div>
+  <div class="card-footer text-muted">
+    {el.labels.map(lable => {
+                        return (
+                            <div>
+                                <span className="rounded-pill" style={{color: `${lable.color}`}}>{lable.name}</span>
+                            </div>
+                        )
+                    })}
+  </div>
+</div>

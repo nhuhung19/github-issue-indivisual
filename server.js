@@ -19,7 +19,7 @@ http.createServer((req, res) => {
       }
     }, (err, r, body) => {
       res.writeHead(301, {
-        'Location': 'http://localhost:3000?' + body
+        'Location': 'https://kgithub.netlify.com?' + body
       });
       res.end();
     })
