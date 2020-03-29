@@ -65,50 +65,69 @@ function App() {
     const onPostIssue = async (e) => {
         let fullName = issueName
         e.preventDefault()
-        const issue = { title: inputTitle, body: inputContent};
+        const issue = { title: inputTitle, body: inputContent };
         console.log(issue)
         console.log(fullName)
-        const url = `https://api.github.com/repos/${fullName}/issues`;
-        const response = await fetch(url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-                Authorization: `token ${token}`
-            },
-            body: JSON.stringify(issue)
-        });
+        try {
+            const url = `https://api.github.com/repos/${fullName}/issues`;
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    Authorization: `token ${token}`
+                },
+                body: JSON.stringify(issue)
+            });
+            console.log(response)
+            if (response.status * 1 === 422) {
+                throw new Error(response.statusText = alert('Data could not be posted Error 422 Unprocessable Entity'))
+            }
+        } catch (error) {
+            console.log(error)
+        }
+        setIsOpen(false);
     }
 
 
 
     const fetchSearch = async (searchTerm, page) => {
-        let url = `https://api.github.com/search/repositories?q=${searchTerm}&page=${page}`
-        let respone = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/vnd.github.mercy-preview+json'
-            },
-        })
-        let result = await respone.json()
-        console.log(result)
-        setRepos(result.items)
-        setTotal(result.total_count)
-        console.log(result.items)
+        try {
+            let url = `https://api.github.com/search/repositories?q=${searchTerm}&page=${page}`
+            let response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/vnd.github.mercy-preview+json'
+                },
+            })
+            let result = await response.json()
+            if (response.status * 1 === 200) {
+                console.log(result)
+                console.log(response)
+                setRepos(result.items)
+                setTotal(result.total_count)
+                console.log(result.items)
+            } else {
+                throw new Error(response.statusText = alert('Data could not be fectched Error 422 Unprocessable Entity'))
+            }
+        } catch (error) {
+            console.log(error)
+        }
 
     }
     const fetchReposIssue = async (fullname) => {
-        // issueName = fullname
+
         setIssueName(fullname)
         console.log(issueName)
         setView('listIssue')
         let url = `https://api.github.com/repos/${fullname}/issues`
-        let respone = await fetch(url, {
+        let response = await fetch(url, {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/vnd.github.scarlet-witch-preview+json'
+                'Content-Type': 'application/vnd.github.VERSION.full+json'
             },
         })
-        let result = await respone.json()
+        console.log(response)
+        let result = await response.json()
         console.log('listIssue', result)
         setIssues(issues.concat(result))
         console.log(issues)
@@ -120,7 +139,12 @@ function App() {
         }
         else if (view === 'listIssue') {
             return (
-                <ListIssue issues={issues} openModal={openModal} />
+                <div className="row w-100">
+                    <div className="col-lg-3"></div>
+                    <div className="col-lg-9">
+                        <ListIssue issues={issues} openModal={openModal} />
+                    </div>
+                </div>
             )
         }
     }
@@ -128,22 +152,32 @@ function App() {
     const showRepos = () => {
         if (repos !== null && repos.length === 0) {
             return (
-                <div>Loading..</div>
+                <div className="mt-auto">
+                    <div className="w-100 h-100 text-center">
+                        <h1>Well Come To Github Issue</h1>
+                        <h3>Instruction Search:</h3>
+                        <div>• Search for repositories with "repositories name"</div>
+                        <div>• Jump to a user's repositories with "user/"</div>
+                    </div>
+                </div>
             )
         } else {
             return (
-                <div>
-                    <h3>Total Result:{total} </h3>
-                    <Repositories repos={repos} fetchReposIssue={fetchReposIssue} />
-                    <Pagination
-                        itemClass="page-item"
-                        linkClass="page-link"
-                        activePage={page}
-                        itemsCountPerPage={30}
-                        totalItemsCount={total}
-                        pageRangeDisplayed={5}
-                        onChange={handlePageChange}
-                    />
+                <div className="row w-100">
+                    <div className="col-lg-3"></div>
+                    <div className="col-lg-9">
+                        <h3>Total Result:{total} </h3>
+                        <Repositories repos={repos} fetchReposIssue={fetchReposIssue} />
+                        <Pagination
+                            itemClass="page-item"
+                            linkClass="page-link"
+                            activePage={page}
+                            itemsCountPerPage={30}
+                            totalItemsCount={total}
+                            pageRangeDisplayed={5}
+                            onChange={handlePageChange}
+                        />
+                    </div>
                 </div>
             )
         }
@@ -164,11 +198,8 @@ function App() {
                 searchTerm={searchTerm}
                 setSearchTerm={setSearchTerm}
             />
-            <div className="row w-100">
-                <div className="col-lg-3"></div>
-                <div className="col-lg-9">
-                    {showView()}
-                </div>
+            <div className="w-100">
+                {showView()}
             </div>
             <div>
                 <Modal

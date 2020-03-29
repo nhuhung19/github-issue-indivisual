@@ -12,7 +12,7 @@ export default function ListIssue(props) {
                 <div className="col-lg-9">
                     <div className="card w-100 h-100">
                         <div className="card-header">
-                            <h4>#{el.number}<span> <a>{el.title}</a></span></h4>
+                            <h4>#{el.number}<span style={{color:'blue' , cursor: 'pointer'}}> <a>{el.title}</a></span></h4>
                             <div>opened {moment(el.updated_at).fromNow()} by <strong>@{el.user.login}</strong></div>
                         </div>
                         <div className="card-body w-100 h-100">
@@ -22,9 +22,9 @@ export default function ListIssue(props) {
                             />
                         </div>
                         <div className="card-footer text-muted">
-                            {el.labels.map(lable => {
+                            {el.labels.map((lable,i) => {
                                 return (
-                                        <span style={{ color: `${lable.color}` }} className="rounded-pill p-2">{lable.name}</span>
+                                        <span key={i} style={{ backgroundColor: `#${lable.color}`, color: 'black' }} className="rounded-pill p-2">{lable.name}</span>
                                 )
                             })}
                         </div>
