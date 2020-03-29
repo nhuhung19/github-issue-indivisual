@@ -4,6 +4,7 @@ import './App.css';
 import NavBarSearch from './components/NavBarSearch'
 import Repositories from './components/Repostories'
 import ListIssue from './components/ListIssue'
+import EveryIssue from './components/EveryIssue';
 import Pagination from "react-js-pagination";
 import Modal from 'react-modal';
 const ReactDOM = require('react-dom')
@@ -17,6 +18,7 @@ const clientId = process.env.REACT_APP_CLIENT_ID;
 function App() {
     const [token, setToken] = useState(null)
     const [modalIsOpen, setIsOpen] = useState(false);
+    const [selectedIssue, setSelectedIssue] = useState(null)
     let [view, setView] = useState('landing')
     let [searchTerm, setSearchTerm] = useState('')
     let [page, setPage] = useState(1)
@@ -26,6 +28,7 @@ function App() {
     let [inputTitle, setInputTitle] = useState('')
     let [inputContent, setInputContent] = useState('')
     let [total, setTotal] = useState(null)
+
 
     useEffect(() => {
         const existingToken = localStorage.getItem('token');
@@ -86,11 +89,15 @@ function App() {
             console.log(error)
         }
         setIsOpen(false);
+        setTimeout(() => {
+            fetchReposIssue(fullName)
+        }, 3000);
     }
 
 
 
     const fetchSearch = async (searchTerm, page) => {
+        setView('landing')
         try {
             let url = `https://api.github.com/search/repositories?q=${searchTerm}&page=${page}`
             let response = await fetch(url, {
@@ -115,9 +122,8 @@ function App() {
 
     }
     const fetchReposIssue = async (fullname) => {
-
-        setIssueName(fullname)
-        console.log(issueName)
+        setIssueName(fullname) // nay lam gi? lúc e click vô title thì set lại fullname
+        console.log("saDASDSADASDAS",issueName)
         setView('listIssue')
         let url = `https://api.github.com/repos/${fullname}/issues`
         let response = await fetch(url, {
@@ -129,8 +135,31 @@ function App() {
         console.log(response)
         let result = await response.json()
         console.log('listIssue', result)
-        setIssues(issues.concat(result))
-        console.log(issues)
+        
+        setIssues(result)
+        // console.log(issues)
+    }
+
+    let openModal = () => {
+        setIsOpen(true);
+    }
+
+    let closeModal = () => {
+        setIsOpen(false);
+    }
+
+    const showEveryView = () => {
+        if (view === 'listIssue') {
+            return (
+                <EveryIssue
+                    issues={issues}
+                    openModal={openModal}
+                    modalIsOpen={modalIsOpen}
+                    closeModal={closeModal}
+                />
+            )
+
+        }
     }
 
     const showView = () => {
@@ -142,9 +171,20 @@ function App() {
                 <div className="row w-100">
                     <div className="col-lg-3"></div>
                     <div className="col-lg-9">
-                        <ListIssue issues={issues} openModal={openModal} />
+                        <ListIssue issues={issues}
+                            setView={setView}
+                            openModal={openModal}
+                            setSelectedIssue={setSelectedIssue}
+                        />
                     </div>
                 </div>
+            )
+        } else if (view === 'everyIssue') {
+            return (
+                <EveryIssue
+                    selectedIssue={selectedIssue}
+                    token={token}
+                />
             )
         }
     }
@@ -182,13 +222,8 @@ function App() {
             )
         }
     }
-    let openModal = () => {
-        setIsOpen(true);
-    }
 
-    let closeModal = () => {
-        setIsOpen(false);
-    }
+
 
     // console.log(token)
     return (
