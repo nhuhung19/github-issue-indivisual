@@ -1,0 +1,20 @@
+/homepage ==> for search and show result
+/addnewissue/:repos/ {addNewIssue}  ==> add new issue
+/singleIssue/owner/:repos/:id {singleIssue} ==>show single Issue
+
+
+
+ <div className="container jumbotron mt-3">
+            <form onSubmit={(e) => handleSubmit(e)}>
+                <div class="form-group">
+                    <label for="exampleFormControlInput1">Title</label>
+                    <input type="text" onChange={(e) => setInputTitle(e.target.value)} value={inputTitle} class="form-control" id="exampleFormControlInput1" placeholder="Title" />
+                </div>
+
+                <div class="form-group">
+                    <label for="exampleFormControlTextarea1">Content</label>
+                    <textarea class="form-control" onChange={(e) => setInputContent(e.target.value)} value={inputContent} id="exampleFormControlTextarea1" rows="6"></textarea>
+                </div>
+                <button type="submit" className="btn btn-success">Submit</button>
+            </form>
+        </div>

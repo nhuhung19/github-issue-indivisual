@@ -1,5 +1,6 @@
 import React from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css';
+import {Link} from 'react-router-dom'
 const ReactDOM = require('react-dom')
 const ReactMarkdown = require('react-markdown/with-html')
 const moment = require('moment');
@@ -8,15 +9,13 @@ export default function ListIssue(props) {
     console.log(props)
     let htmlListIssue = props.issues.map((el, index) => {
         return (
-            <div onClick={() => {
-                props.setView('everyIssue');
-                // look in el (issue9 object), see where is the issue id in this object
-                props.setSelectedIssue(el) 
-            }  } className="row mt-4" key={index}>
+            <div className="row mt-4" key={index}>
                 <div className="col-lg-9">
                     <div className="card w-100 h-100">
                         <div className="card-header">
-                            <h4>#{el.number}<span style={{color:'blue' , cursor: 'pointer'}}> <a>{el.title}</a></span></h4>
+                            <h4>#{el.number}<span style={{color:'blue' , cursor: 'pointer'}}> 
+                            <Link to={`/singleissue/${props.owner}/${props.repos}/${el.number}`}>{el.title}</Link>
+                            </span></h4>
                             <div>opened {moment(el.updated_at).fromNow()} by <strong>@{el.user.login}</strong></div>
                         </div>
                         <div className="card-body w-100 h-100">
@@ -44,7 +43,7 @@ export default function ListIssue(props) {
     })
     return (
         <div className="mt-2" >
-            <button onClick={() => props.openModal()} type="button" className="btn btn-success">New Issue</button>
+            <Link to={`/addnewissue/${props.owner}/${props.repos}`} ><button type="button" className="btn btn-success">New Issue</button></Link>
             {htmlListIssue}
         </div>
     )

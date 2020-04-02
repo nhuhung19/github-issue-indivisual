@@ -1,35 +1,49 @@
 import React, { useState, useEffect } from 'react'
 import Modal from 'react-modal';
+import {useParams} from 'react-router-dom'
 const ReactMarkdown = require('react-markdown/with-html')
 
-export default function EveryIssue(props) {
-
+export default function SingleIssue(props) {
+    const {owner, repos, number} = useParams()
     const [comments, setComments] = useState([]);
+    const [singleIssue, setSingleIssue] = useState({})
     const [newCommentText, setNewCommentText] = useState('');
     const [loading,setLoading] = useState (false);
 
     const fetchComments = async () => {
-        let url = props.selectedIssue.comments_url;
+        let url = `https://api.github.com/repos/${owner}/${repos}/issues/${number}/comments`;
         let respone = await fetch(url, {
             method: 'GET',
         })
         let result = await respone.json()
+        console.log(result)
         setComments(result)
     }
     useEffect(() => {
+        fetchSingleIssue()
         fetchComments()
     }, [])
+
+    const fetchSingleIssue = async () => {
+        let url = `https://api.github.com/repos/${owner}/${repos}/issues/${number}`
+        let respone = await fetch(url, {
+            method: 'GET',
+        })
+        let result = await respone.json()
+        setSingleIssue(result)
+    }
+    
 
     return (
         <div className="container mt-3">
             <h1>EveryIssue component</h1>
             <div>
-                <p> number: {props.selectedIssue.number} + Title: {props.selectedIssue.title} </p>
+                <p> number: {singleIssue.number} + Title: {singleIssue.title} </p>
 
-                <p> State: {props.selectedIssue.state}</p>
+                <p> State: {singleIssue.state}</p>
 
                 <ReactMarkdown
-                    source={props.selectedIssue.body}
+                    source={singleIssue.body}
                     escapeHtml={false}
                 />
                 <input className="p-1 rounded" value={newCommentText} onChange={(event) => {
@@ -37,7 +51,7 @@ export default function EveryIssue(props) {
                 }} />
                 <button type="button" class="btn btn-success mx-2" onClick={async () => {
                     setLoading (true);
-                    let url = props.selectedIssue.comments_url;
+                    let url = `https://api.github.com/repos/${owner}/${repos}/issues/${number}/comments`;
                     let respone = await fetch(url, {
                         method: 'POST',
                         headers: {
@@ -62,7 +76,7 @@ export default function EveryIssue(props) {
                     })
                 }}> Reload Comment </button>
 
-                <p> Comment: {props.selectedIssue.comments} </p>
+                <p> Comment: {singleIssue.comments} </p>
                 {loading?"loading...":comments.map((item) => {
 
                     return (
